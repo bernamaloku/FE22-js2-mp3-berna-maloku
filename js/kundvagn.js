@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-//detta hämtar data från en firebase realtime database och använder den för att skapa en lista med produkter.
+//Detta är JavaScript-kod som hämtar data från en Firebase Realtime Database och använder den för att skapa en lista med produkter.
 const apiUrl =
   "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app/cart.json";
 let products = [];
@@ -76,7 +76,9 @@ function emptyCart() {
   localStorage.clear();
 }
 
-//detta hämtar en knapp med id "buy" och tilldelar den en händelsehanterare som kör funktionen buyItems() när knappen klickas på  buyBtn .
+//detta hämtar en knapp med id "buy" och tilldelar den en händelsehanterare som kör funktionen buyItems() när knappen klickas på  buyBtn
+
+let buyBtn = document.getElementById("buy");
 buyBtn.addEventListener(
   "click",
   function () {
@@ -84,6 +86,7 @@ buyBtn.addEventListener(
   },
   false
 );
+
 function buyItems() {
   products.forEach((item) => {
     totalPrice += item.price;
