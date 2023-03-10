@@ -1,4 +1,3 @@
-
 import anime from "..//node_modules/animejs/lib/anime.es.js";
 import Cookie from "../node_modules/cookiejs/dist/cookie.esm.js";
 
@@ -7,10 +6,10 @@ const apiUrl =
 const cartUrl =
   "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app/cart.json";
 
-
 const count = document.getElementById("count");
 let boughtItemsCounter = 0;
 
+//Detta är en asynkron JavaScript-funktion som hämtar data från en API-endpoint som ligger på apiUrl, konverterar svaret till ett JSON-objekt, itererar över den resulterande arrayen av objekt och lägger till varje objekt i en ny array med namnet products. Den anropar  en annan funktion  och skickar products-arrayen som ett argument.
 async function getAllDataFromFireBase() {
   const products = [];
   const res = await fetch(apiUrl);
@@ -25,6 +24,7 @@ async function getAllDataFromFireBase() {
 
 getAllDataFromFireBase();
 
+//Den här tar emot en array av produkter som ett argument och skapar HTML-element för varje produkt och lägger till dem i DOM.
 function appendObjetcToDom(products) {
   const productContainer = document.getElementById("main-container");
 
@@ -39,7 +39,7 @@ function appendObjetcToDom(products) {
     const productBtn = document.createElement("button");
     productBtn.innerText = "Add to cart";
     productBtn.id = "productBtn";
-    productBtn.setAttribute("product", element.name);
+    productBtn.setAttribute("product", element.name); //setAttribute, lägger värde på productBtn
     productBtn.addEventListener(
       "click",
       function () {
@@ -47,7 +47,6 @@ function appendObjetcToDom(products) {
       },
       false
     );
-    //lägger värde på productBtn
 
     const productTitle = document.createElement("h4");
     productTitle.innerText = element.name;
@@ -64,7 +63,7 @@ function appendObjetcToDom(products) {
     setLocalStorage(element);
   });
 }
-
+//funktion som tar emot två argument, ett element som representerar den produkt som köpts och en button som representerar knappen som klickades på för att köpa produkten.
 function buyItem(element, button) {
   if (element.stock === 1) {
     button.disabled = true;
@@ -76,6 +75,7 @@ function buyItem(element, button) {
   addBoughtItemsToCart(element);
 }
 
+//funktioner som används för att lagra och uppdatera data i webbläsarens localStorage.
 function setLocalStorage(element) {
   localStorage.setItem(element.name, element.stock);
 }
@@ -84,11 +84,13 @@ function updateLocalStorage(element) {
   localStorage.setItem(element.name, element.stock - 1);
 }
 
+//detta hämtar och visar antalet köpta produkter som finns i webbläsarens localStorage.
 const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
 boughtItemsCounter = cartItems.length;
 count.innerText = boughtItemsCounter;
 
+//detta är en async JavaScript-funktion som används för att lägga till en produkt i kundvagnen.
 async function addBoughtItemsToCart(element) {
   await fetch(cartUrl, {
     method: "POST",
@@ -103,6 +105,7 @@ async function addBoughtItemsToCart(element) {
   localStorage.setItem("cartItems", JSON.stringify(cartItems));
 }
 
+//animation på cart button
 const cart = document.querySelector("#cart");
 anime({
   targets: cart,
@@ -113,6 +116,7 @@ anime({
   delay: anime.stagger(200, { grid: [14, 5], from: "center" }),
 });
 
+//detta använder en npm bibliotek för att lagra och hämta en array av värden från webbläsarens cookies.
 Cookie.set("savedBalanceArr", JSON.stringify(cartItems), { expires: 50 });
 
 const savedBalanceArr = Cookie.get("savedBalanceArr");

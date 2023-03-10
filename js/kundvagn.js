@@ -5,10 +5,6 @@ import {
   remove,
 } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 
-
-
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyBflweFzxWKnxh7yLFw1DvpIgkiNpHTjUI",
   authDomain: "miniprojekt3-177bf.firebaseapp.com",
@@ -22,6 +18,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+//Detta är JavaScript-kod som hämtar data från en Firebase Realtime Database och använder den för att skapa en lista med produkter.
 const apiUrl =
   "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app/cart.json";
 let products = [];
@@ -40,6 +37,7 @@ async function getAllDataFromFireBase() {
 
 getAllDataFromFireBase();
 
+//denna funktion visar alla element på kundvagnens sida (i DOM:en)
 function appendObjetcToDom(products) {
   const productContainer = document.getElementById("cart-container");
 
@@ -57,7 +55,7 @@ function appendObjetcToDom(products) {
   });
 }
 
-
+//eventListener på empty button så att det töms
 let emptyBtn = document.getElementById("empty");
 emptyBtn.addEventListener(
   "click",
@@ -67,7 +65,7 @@ emptyBtn.addEventListener(
   false
 );
 
-
+//detta är funktion som tömmer kundvagnen genom att radera alla objekt från firebase realtime database och återställa lokalt lagrad data.
 function emptyCart() {
   const db = getDatabase(app);
   remove(ref(db, "cart/"));
@@ -78,7 +76,7 @@ function emptyCart() {
   localStorage.clear();
 }
 
-const buyBtn = document.getElementById("buy");
+//detta hämtar en knapp med id "buy" och tilldelar den en händelsehanterare som kör funktionen buyItems() när knappen klickas på  buyBtn .
 buyBtn.addEventListener(
   "click",
   function () {
