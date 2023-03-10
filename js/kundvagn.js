@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-//Detta är JavaScript-kod som hämtar data från en Firebase Realtime Database och använder den för att skapa en lista med produkter.
+//detta hämtar data från en firebase realtime database och använder den för att skapa en lista med produkter.
 const apiUrl =
   "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app/cart.json";
 let products = [];
