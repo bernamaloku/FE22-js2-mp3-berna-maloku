@@ -3,6 +3,7 @@ import {
   getDatabase,
   ref,
   remove,
+  update,
 } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -73,12 +74,12 @@ function emptyCart() {
   cartContainer.innerHTML = "";
   products = [];
   totalPrice = 0;
-  localStorage.clear();
+  localStorage.removeItem("cartItems");
 }
 
 //detta hämtar en knapp med id "buy" och tilldelar den en händelsehanterare som kör funktionen buyItems() när knappen klickas på  buyBtn
-
 let buyBtn = document.getElementById("buy");
+
 buyBtn.addEventListener(
   "click",
   function () {
@@ -88,10 +89,37 @@ buyBtn.addEventListener(
 );
 
 function buyItems() {
+  console.log(products);
+  let itemsToRemove = [...new Map(products.map(v => [v.name, v])).values()]
+  console.log(itemsToRemove);
   products.forEach((item) => {
     totalPrice += item.price;
   });
-
+  itemsToRemove.forEach((item) => {
+    replaceAmount(item);
+  });
   alert(totalPrice + " kr");
-  emptyCart();
+  localStorage.removeItem("cartItems");
+  products.forEach((product) => {
+    products = products.filter((item) => item !== product);
+  });
+  let cartContainer = document.getElementById("cart-container");
+  cartContainer.innerHTML = "";
+  const db = getDatabase(app);
+  remove(ref(db, "cart/"));
+  totalPrice = 0;
 }
+
+async function replaceAmount(obj) {
+  const amountUrl = "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app/" + `products/${obj.index}.json`;
+  const init = {
+    method: "PATCH",
+    body: JSON.stringify(obj),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  };
+  const response = await fetch(amountUrl, init);
+  const data = await response.json();
+}
+
