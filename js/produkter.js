@@ -1,5 +1,6 @@
 import anime from "..//node_modules/animejs/lib/anime.es.js";
 import Cookie from "../node_modules/cookiejs/dist/cookie.esm.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
 
 const apiUrl =
   "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app/products.json";
@@ -9,20 +10,39 @@ const cartUrl =
 const count = document.getElementById("count");
 let boughtItemsCounter = 0;
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBflweFzxWKnxh7yLFw1DvpIgkiNpHTjUI",
+  authDomain: "miniprojekt3-177bf.firebaseapp.com",
+  databaseURL:
+    "https://miniprojekt3-177bf-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "miniprojekt3-177bf",
+  storageBucket: "miniprojekt3-177bf.appspot.com",
+  messagingSenderId: "507171321163",
+  appId: "1:507171321163:web:6dd2939779dd0af28ce4ce",
+};
+
+const app = initializeApp(firebaseConfig);
+
+getAllDataFromFireBase();
+
 //Detta är en asynkron JavaScript-funktion som hämtar data från en API-endpoint som ligger på apiUrl, konverterar svaret till ett JSON-objekt, itererar över den resulterande arrayen av objekt och lägger till varje objekt i en ny array med namnet products. Den anropar  en annan funktion  och skickar products-arrayen som ett argument.
 async function getAllDataFromFireBase() {
   const products = [];
   const res = await fetch(apiUrl);
   await res.json().then((result) => {
-    result.forEach((element) => {
-      products.push(element);
+    result.forEach((element, index) => {
+      let item = {
+        name: element.name,
+        price: element.price,
+        stock: element.stock,
+        url: element.url,
+        index: index
+      }
+      products.push(item);
     });
   });
-
   appendObjetcToDom(products);
 }
-
-getAllDataFromFireBase();
 
 //Den här tar emot en array av produkter som ett argument och skapar HTML-element för varje produkt och lägger till dem i DOM.
 function appendObjetcToDom(products) {
@@ -32,14 +52,17 @@ function appendObjetcToDom(products) {
     const productDiv = document.createElement("div");
     productDiv.id = "productDiv";
 
-    console.log(element);
     const image = document.createElement("img");
     image.src = element.url;
 
     const productBtn = document.createElement("button");
     productBtn.innerText = "Add to cart";
     productBtn.id = "productBtn";
-    productBtn.setAttribute("product", element.name); //setAttribute, lägger värde på productBtn
+    productBtn.setAttribute("product", element.name);
+    //setAttribute, lägger värde på productBtn
+    if(element.stock === 0){
+      productBtn.disabled = true;
+    }
     productBtn.addEventListener(
       "click",
       function () {
@@ -59,20 +82,21 @@ function appendObjetcToDom(products) {
     productDiv.append(price);
     productDiv.append(productBtn);
     productContainer.append(productDiv);
+    
 
     setLocalStorage(element);
   });
 }
 //funktion som tar emot två argument, ett element som representerar den produkt som köpts och en button som representerar knappen som klickades på för att köpa produkten.
 function buyItem(element, button) {
-  if (element.stock === 1) {
-    button.disabled = true;
-  }
   boughtItemsCounter++;
   updateLocalStorage(element);
   element.stock--;
   count.innerText = boughtItemsCounter;
   addBoughtItemsToCart(element);
+  if(element.stock === 0){
+    button.disabled = true;
+  } 
 }
 
 //funktioner som används för att lagra och uppdatera data i webbläsarens localStorage.
@@ -81,7 +105,8 @@ function setLocalStorage(element) {
 }
 
 function updateLocalStorage(element) {
-  localStorage.setItem(element.name, element.stock - 1);
+  console.log(element)
+  localStorage.setItem(element.name, element.stock -1);
 }
 
 //detta hämtar och visar antalet köpta produkter som finns i webbläsarens localStorage.
@@ -102,6 +127,7 @@ async function addBoughtItemsToCart(element) {
   let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
   cartItems.push(element);
+  
   localStorage.setItem("cartItems", JSON.stringify(cartItems));
 }
 
@@ -117,11 +143,11 @@ anime({
 });
 
 //detta använder en npm bibliotek för att lagra och hämta en array av värden från webbläsarens cookies.
-Cookie.set("savedBalanceArr", JSON.stringify(cartItems), { expires: 50 });
-
+if(!Cookie.get("savedBalanceArr")){
+  Cookie.set("savedBalanceArr", JSON.stringify(cartItems), { expires: 50 });
+}
 const savedBalanceArr = Cookie.get("savedBalanceArr");
 
 if (savedBalanceArr) {
-  const savedBalanceArr = JSON.parse(savedBalanceArrCookie);
-  console.log(savedBalanceArr);
+  let b = JSON.parse(savedBalanceArr);
 }
